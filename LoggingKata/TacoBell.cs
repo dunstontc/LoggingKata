@@ -1,15 +1,22 @@
-﻿namespace LoggingKata
+﻿using log4net.Core;
+
+namespace LoggingKata
 {
-    public class TacoBell
+    public class TacoBell : ITrackable
     {
         // Constructor for a new TacoBell
-        public TacoBell(ITrackable data)
+        public TacoBell(double lon, double lat, string name)
         {
-            Data = data;
-            Data.Name = data.Name;
-            Data.Location = data.Location;
+            Name = name;
+            Location = new Point(lon, lat);
+            Lon = lon;
+            Lat = lat;
         }
         
-        public ITrackable Data { get; set; }
+        public string Name { get; set; }
+        public Point Location { get; set; }
+        public double Lat;
+        public double Lon;
+
     }
 }
