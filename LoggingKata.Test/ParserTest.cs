@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using NUnit.Framework;
 
+
 namespace LoggingKata.Test
 {
     [TestFixture]
@@ -13,26 +14,38 @@ namespace LoggingKata.Test
         [Test]
         public void ShouldReturnNullForEmptyString()
         {
-            var testNull =  "";
-            var parser = new TacoParser();
-
-            var result = parser.Parse(testNull);
-
-            Assert.Null(result);
+            const string emptyString = "";
+            var res = TacoParser.Parse(emptyString);
+            Assert.Null(res);
+        }
+        
+        [Test]
+        public void ShouldReturnNullForNullString()
+        {
+            const string nullString = null;
+            var res = TacoParser.Parse(nullString);
+            Assert.Null(res);
         }
 
         [Test]
         public void ShouldParseLine()
         {
-            var tacoParser = new TacoParser();
-            var tacoCoordinates =
-                "-84.677017, 34.073638,Taco Bell Acwort... (Free trial * Add to Cart for a full POI info) ";
-
-            var resultTaco = tacoParser.Parse(tacoCoordinates);
-
-            Assert.IsNotNull(resultTaco);
+            const string testString = "-84.460905, 34.466038,\"Jaspe... \"";
+            var res = TacoParser.Parse(testString);
+            Assert.IsNotNull(res);
         }
+
+        [Test]
+        public void ShouldReturnNullForInvalidNumbers()
+        {
+            const string testString = "-84.460905, \"Jaspe... \"";
+            var res = TacoParser.Parse(testString);
+            Assert.Null(res);
+        }
+
+        // TODO: Test for valid number values with no description.
     }
 }
+
 
 

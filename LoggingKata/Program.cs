@@ -1,40 +1,23 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Geolocation;
 using log4net;
 
 namespace LoggingKata
 {
-    class Program
+    internal static class Program
     {
-        // QUESTION: Why do you think we use ILog?
         private static readonly ILog Logger =
             LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
-        // Grab the path from Environment.CurrentDirectory + the name of your file
-        //public static string mainPath = Path.Combine(Environment.CurrentDirectory, "..", "..");
-        //public static string filePath = Path.Combine(mainPath, @"Taco_Bell-US-AL-Alabama.csv");
-        //public static string[] dataFile = Directory.GetFiles(filePath);
-        
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
-            // TODO: Find the two TacoBells in Alabama that are the furthurest from one another.
-            // HINT: You'll need two nested forloops
-    
             Logger.Info("Log initialized");
             
-            if (args.Length == 0)
-            {
-                Console.WriteLine("You must provide a filename as an argument");
-                Logger.Fatal("Cannot import without filename specified as an argument");
-                return;
-            }
-
-            var lines = File.ReadAllLines(args[0]);
+            var dataFile = Path.Combine(Environment.CurrentDirectory, @"Taco_Bell-US-AL-Alabama.csv");
+            
+            var lines = File.ReadAllLines(dataFile);
             
             switch (lines.Length)
             {
@@ -49,16 +32,14 @@ namespace LoggingKata
                     break;
             }
 
-            var parser = new TacoParser();
-            
-            // Grab an IEnumerable of locations using the Select command: var locations = lines.Select(line => parser.Parse(line));
-            var locations = lines.Select(line => parser.Parse(line));
+            var locations = lines.Select(TacoParser.Parse);
 
             ITrackable locA = null;
             ITrackable locB = null;
             double distance = 0;
 
 
+            // TODO: find a more efficient way than nested loops.
             foreach (var curLocA in locations)
             {
                 var origin = new Coordinate
@@ -74,7 +55,8 @@ namespace LoggingKata
                         Longitude = curLocB.Location.Longitude,
                         Latitude = curLocB.Location.Latitude
                     };
-                    var result = GeoCalculator.GetDistance(origin, destination, 1);
+                    
+                    var result = GeoCalculator.GetDistance(origin, destination);
                 
                     if (result > distance)
                     {
@@ -86,8 +68,8 @@ namespace LoggingKata
                 }
             }
 
-            Console.WriteLine($"The Taco Bells in Alabama furthest from each other are {locA.Name} and {locB.Name}.");
-            Console.Write($"They are {distance} miles apart.");
+            Console.WriteLine($"The two Taco Bells in Alabama furthest from each other are in {locA.Name} and {locB.Name}.");
+            Console.WriteLine($"They are {distance} miles apart.");
         }
     }
 }
